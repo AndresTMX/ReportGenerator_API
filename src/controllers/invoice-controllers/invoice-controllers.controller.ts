@@ -1,44 +1,30 @@
 import { Controller, Get, Post, Delete, Query, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
-import { UUID } from 'crypto';
+import { invoiceService } from '../../services/invoice-service/invoice-service.service';
+import { ParseIntPipe } from '@nestjs/common';
 
-@Controller('invoice-controllers')
+@Controller('registers')
 export class InvoiceControllersController {
 
-    constructor(private id: UUID, name: string, jobtitle: string, date: string) { }
+    constructor(private invoiceService: invoiceService) {}
 
-    @Post('registers')
-    @HttpCode(HttpStatus.CREATED)
-    CreateRegister(@Body() payload: any) {
-        return {
-            message: 'Registro creado con exito',
-            payload,
-        }
-    }
-
-    @Get('registers')
+    @Get()
     GetAllRegisters(@Query('limit') limit = 10, @Query('offset') offset = 0) {
-        return {
-            count: '2',
-            data: {
-                registers: [
-                    { id: '1', name: 'nombre usuario' },
-                    { id: '2', name: 'nombre usuario' }
-                ]
-            }
-        }
+        return this.invoiceService.findAll();
+    }
+    
+    @Post()
+    @HttpCode(HttpStatus.CREATED)
+    CreateRegister(@Body() payload: any): { message: string; invoice: any; } {
+        return this.invoiceService.create(payload)
     }
 
-    @Get('registers/:registerId')
-    GetOneRegister(@Param('registerId') registerId: UUID){
-        return{
-            invoiceRegister:{
-                id:registerId
-            }
-        }
+    @Get(':registerId')
+    GetOneRegister(@Param('registerId',ParseIntPipe) registerId: number){
+        return this.invoiceService.findOne(registerId);
     }
 
-    @Delete('registers/:registerId')
-    deleteOneRegister(@Param('registerId') registerId: UUID){
+    @Delete(':registerId')
+    deleteOneRegister(@Param('registerId',ParseIntPipe) registerId: number){
         return{
             message:`El Folio de baja #${registerId} ha sido eliminado`
         }
