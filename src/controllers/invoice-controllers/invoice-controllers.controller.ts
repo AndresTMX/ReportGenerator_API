@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Delete, Query, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
 import { invoiceService } from '../../services/invoice-service/invoice-service.service';
+import { CreateInvoice } from '../../dtos/invoice.dtos';
 import { ParseIntPipe } from '@nestjs/common';
 
 @Controller('registers')
@@ -14,7 +15,7 @@ export class InvoiceControllersController {
     
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    CreateRegister(@Body() payload: any): { message: string; invoice: any; } {
+    CreateRegister(@Body() payload: CreateInvoice): { message: string; invoice: CreateInvoice; } {
         return this.invoiceService.create(payload)
     }
 
